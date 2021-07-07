@@ -237,6 +237,17 @@ GEN_TRANS_SHADD(1)
 GEN_TRANS_SHADD(2)
 GEN_TRANS_SHADD(3)
 
+#define GEN_TRANS_CLMUL(NAME)                                             \
+static bool trans_##NAME(DisasContext *ctx, arg_##NAME *a)                \
+{                                                                         \
+    REQUIRE_EXT(ctx, RVB);                                                \
+    return gen_arith(ctx, a, gen_helper_##NAME);                          \
+}
+
+GEN_TRANS_CLMUL(clmul)
+GEN_TRANS_CLMUL(clmulh)
+GEN_TRANS_CLMUL(clmulr)
+
 static bool trans_clzw(DisasContext *ctx, arg_clzw *a)
 {
     REQUIRE_64BIT(ctx);
