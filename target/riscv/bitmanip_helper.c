@@ -122,3 +122,15 @@ target_ulong HELPER(clmulr)(target_ulong rs1, target_ulong rs2)
 {
     return do_clmulr(rs1, rs2, TARGET_LONG_BITS);
 }
+
+static target_ulong do_cmov(target_ulong rs1,
+                            target_ulong rs2,
+                            target_ulong rs3)
+{
+    return rs2 ? rs1 : rs3;
+}
+
+target_ulong HELPER(cmov)(target_ulong rs1, target_ulong rs2, target_ulong rs3)
+{
+    return do_cmov(rs1, rs2, rs3);
+}

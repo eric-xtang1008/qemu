@@ -248,6 +248,18 @@ GEN_TRANS_CLMUL(clmul)
 GEN_TRANS_CLMUL(clmulh)
 GEN_TRANS_CLMUL(clmulr)
 
+static bool trans_cmix(DisasContext *ctx, arg_cmix *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_quat(ctx, a, gen_cmix);
+}
+
+static bool trans_cmov(DisasContext *ctx, arg_cmov *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_quat(ctx, a, gen_helper_cmov);
+}
+
 static bool trans_clzw(DisasContext *ctx, arg_clzw *a)
 {
     REQUIRE_64BIT(ctx);

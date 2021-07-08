@@ -789,6 +789,35 @@ static bool gen_arith(DisasContext *ctx, arg_r *a,
     return true;
 }
 
+static void gen_cmix(TCGv ret, TCGv arg1, TCGv arg2, TCGv arg3)
+{
+    tcg_gen_and_tl(arg1, arg1, arg2);
+    tcg_gen_not_tl(arg2, arg2);
+    tcg_gen_and_tl(arg3, arg3, arg2);
+    tcg_gen_or_tl(ret, arg1, arg3);
+}
+
+static bool gen_quat(DisasContext *ctx, arg_r3 *a,
+                     void(*func)(TCGv, TCGv, TCGv, TCGv))
+{
+    TCGv source1, source2, source3;
+    source1 = tcg_temp_new();
+    source2 = tcg_temp_new();
+    source3 = tcg_temp_new();
+
+    gen_get_gpr(source1, a->rs1);
+    gen_get_gpr(source2, a->rs2);
+    gen_get_gpr(source3, a->rs3);
+
+    (*func)(source1, source1, source2, source3);
+
+    gen_set_gpr(a->rd, source1);
+    tcg_temp_free(source1);
+    tcg_temp_free(source2);
+    tcg_temp_free(source3);
+    return true;
+}
+
 static bool gen_shift(DisasContext *ctx, arg_r *a,
                         void(*func)(TCGv, TCGv, TCGv))
 {
