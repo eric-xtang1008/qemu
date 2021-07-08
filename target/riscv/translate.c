@@ -836,6 +836,27 @@ static bool gen_shift(DisasContext *ctx, arg_r *a,
     return true;
 }
 
+static bool gen_quati(DisasContext *ctx, arg_r3i *a,
+                      void(*func)(TCGv, TCGv, TCGv, TCGv))
+{
+    TCGv source1, source2, source3;
+    source1 = tcg_temp_new();
+    source2 = tcg_temp_new();
+    source3 = tcg_temp_new();
+
+    gen_get_gpr(source1, a->rs1);
+    tcg_gen_movi_tl(source2, a->imm);
+    gen_get_gpr(source3, a->rs3);
+
+    (*func)(source1, source1, source2, source3);
+
+    gen_set_gpr(a->rd, source1);
+    tcg_temp_free(source1);
+    tcg_temp_free(source2);
+    tcg_temp_free(source3);
+    return true;
+}
+
 static uint32_t opcode_at(DisasContextBase *dcbase, target_ulong pc)
 {
     DisasContext *ctx = container_of(dcbase, DisasContext, base);

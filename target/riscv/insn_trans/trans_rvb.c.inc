@@ -260,6 +260,55 @@ static bool trans_cmov(DisasContext *ctx, arg_cmov *a)
     return gen_quat(ctx, a, gen_helper_cmov);
 }
 
+static bool trans_fsl(DisasContext *ctx, arg_fsl *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_quat(ctx, a, gen_helper_fsl);
+}
+
+static bool trans_fsr(DisasContext *ctx, arg_fsr *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_quat(ctx, a, gen_helper_fsr);
+}
+
+static bool trans_fsri(DisasContext *ctx, arg_fsri *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+
+    if (a->imm >= 64) {
+        return false;
+    }
+
+    return gen_quati(ctx, a, gen_helper_fsr);
+}
+
+static bool trans_fslw(DisasContext *ctx, arg_fslw *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_quat(ctx, a, gen_helper_fsl);
+}
+
+static bool trans_fsrw(DisasContext *ctx, arg_fsrw *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_quat(ctx, a, gen_helper_fsrw);
+}
+
+static bool trans_fsriw(DisasContext *ctx, arg_fsri *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+
+    if (a->imm >= 32) {
+        return false;
+    }
+
+    return gen_quati(ctx, a, gen_helper_fsrw);
+}
+
 static bool trans_clzw(DisasContext *ctx, arg_clzw *a)
 {
     REQUIRE_64BIT(ctx);
