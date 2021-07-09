@@ -248,6 +248,36 @@ GEN_TRANS_CLMUL(clmul)
 GEN_TRANS_CLMUL(clmulh)
 GEN_TRANS_CLMUL(clmulr)
 
+static bool trans_shfl(DisasContext *ctx, arg_shfl *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_shfl);
+}
+
+static bool trans_unshfl(DisasContext *ctx, arg_unshfl *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_unshfl);
+}
+
+static bool trans_shfli(DisasContext *ctx, arg_shfli *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    if (a->shamt >= (TARGET_LONG_BITS / 2)) {
+        return false;
+    }
+    return gen_shifti(ctx, a, gen_helper_shfl);
+}
+
+static bool trans_unshfli(DisasContext *ctx, arg_unshfli *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    if (a->shamt >= (TARGET_LONG_BITS / 2)) {
+        return false;
+    }
+    return gen_shifti(ctx, a, gen_helper_unshfl);
+}
+
 static bool trans_cmix(DisasContext *ctx, arg_cmix *a)
 {
     REQUIRE_EXT(ctx, RVB);
@@ -281,6 +311,20 @@ static bool trans_fsri(DisasContext *ctx, arg_fsri *a)
     }
 
     return gen_quati(ctx, a, gen_helper_fsr);
+}
+
+static bool trans_shflw(DisasContext *ctx, arg_shflw *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_shflw);
+}
+
+static bool trans_unshflw(DisasContext *ctx, arg_unshflw *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_unshflw);
 }
 
 static bool trans_fslw(DisasContext *ctx, arg_fslw *a)
