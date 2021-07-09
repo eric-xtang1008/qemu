@@ -792,6 +792,22 @@ GEN_RV64ONLY_INSN_2(shflw)
 GEN_RV64ONLY_INSN_2(unshflw)
 GEN_RV64ONLY_INSN_2(bfpw)
 
+static void gen_bcompressw(TCGv ret, TCGv arg1, TCGv arg2)
+{
+    tcg_gen_ext32u_tl(arg1, arg1);
+    tcg_gen_ext32u_tl(arg2, arg2);
+    gen_helper_bcompress(ret, arg1, arg2);
+    tcg_gen_ext32s_tl(ret, ret);
+}
+
+static void gen_bdecompressw(TCGv ret, TCGv arg1, TCGv arg2)
+{
+    tcg_gen_ext32u_tl(arg1, arg1);
+    tcg_gen_ext32u_tl(arg2, arg2);
+    gen_helper_bdecompress(ret, arg1, arg2);
+    tcg_gen_ext32s_tl(ret, ret);
+}
+
 static bool gen_arith(DisasContext *ctx, arg_r *a,
                       void(*func)(TCGv, TCGv, TCGv))
 {

@@ -396,3 +396,47 @@ target_ulong HELPER(bfpw)(target_ulong rs1, target_ulong rs2)
 {
     return do_bfpw(rs1, rs2);
 }
+
+static target_ulong do_bcompress(target_ulong rs1,
+                                 target_ulong rs2,
+                                 int bits)
+{
+    target_ulong r = 0;
+    int i, j = 0;
+    for (i = 0; i < bits; i++) {
+        if ((rs2 >> i) & 1) {
+            if ((rs1 >> i) & 1)
+                r |= (target_ulong)1 << j;
+            j++;
+        }
+    }
+
+    return r;
+}
+
+static target_ulong do_bdecompress(target_ulong rs1,
+                                   target_ulong rs2,
+                                   int bits)
+{
+    target_ulong r = 0;
+    int i, j = 0;
+    for (i = 0; i < bits; i++) {
+        if ((rs2 >> i) & 1) {
+            if ((rs1 >> j) & 1)
+                r |= (target_ulong)1 << i;
+            j++;
+        }
+    }
+
+    return r;
+}
+
+target_ulong HELPER(bcompress)(target_ulong rs1, target_ulong rs2)
+{
+    return do_bcompress(rs1, rs2, TARGET_LONG_BITS);
+}
+
+target_ulong HELPER(bdecompress)(target_ulong rs1, target_ulong rs2)
+{
+    return do_bdecompress(rs1, rs2, TARGET_LONG_BITS);
+}

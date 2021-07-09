@@ -295,6 +295,18 @@ static bool trans_bfp(DisasContext *ctx, arg_bfp *a)
     return gen_arith(ctx, a, gen_helper_bfp);
 }
 
+static bool trans_bcompress(DisasContext *ctx, arg_bcompress *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_bcompress);
+}
+
+static bool trans_bdecompress(DisasContext *ctx, arg_bdecompress *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_bdecompress);
+}
+
 static bool trans_cmix(DisasContext *ctx, arg_cmix *a)
 {
     REQUIRE_EXT(ctx, RVB);
@@ -382,6 +394,18 @@ static bool trans_fsriw(DisasContext *ctx, arg_fsri *a)
     }
 
     return gen_quati(ctx, a, gen_fsrw);
+}
+
+static bool trans_bcompressw(DisasContext *ctx, arg_bcompressw *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_bcompressw);
+}
+
+static bool trans_bdecompressw(DisasContext *ctx, arg_bdecompressw *a)
+{
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_bdecompressw);
 }
 
 static bool trans_clzw(DisasContext *ctx, arg_clzw *a)
