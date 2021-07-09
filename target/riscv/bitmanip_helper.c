@@ -440,3 +440,140 @@ target_ulong HELPER(bdecompress)(target_ulong rs1, target_ulong rs2)
 {
     return do_bdecompress(rs1, rs2, TARGET_LONG_BITS);
 }
+
+#define DO_CRC(NAME, VALUE)                             \
+static target_ulong do_##NAME(target_ulong rs1,         \
+                             int nbits)                 \
+{                                                       \
+    int i;                                              \
+    target_ulong x = rs1;                               \
+    for (i = 0; i < nbits; i++)                         \
+       x = (x >> 1) ^ ((VALUE) & ~((x&1)-1));           \
+    return x;                                           \
+}
+
+DO_CRC(crc32, 0xEDB88320)
+DO_CRC(crc32c, 0x82F63B78)
+
+target_ulong HELPER(crc32_b)(target_ulong rs1)
+{
+    return do_crc32(rs1, 8);
+}
+
+target_ulong HELPER(crc32_h)(target_ulong rs1)
+{
+    return do_crc32(rs1, 16);
+}
+
+target_ulong HELPER(crc32_w)(target_ulong rs1)
+{
+    return do_crc32(rs1, 32);
+}
+
+target_ulong HELPER(crc32_d)(target_ulong rs1)
+{
+    return do_crc32(rs1, 64);
+}
+
+target_ulong HELPER(crc32c_b)(target_ulong rs1)
+{
+    return do_crc32c(rs1, 8);
+}
+
+target_ulong HELPER(crc32c_h)(target_ulong rs1)
+{
+    return do_crc32c(rs1, 16);
+}
+
+target_ulong HELPER(crc32c_w)(target_ulong rs1)
+{
+    return do_crc32c(rs1, 32);
+}
+
+target_ulong HELPER(crc32c_d)(target_ulong rs1)
+{
+    return do_crc32c(rs1, 64);
+}
+
+static inline uint64_t popcount(uint64_t val)
+{
+    val = (val & 0x5555555555555555U) + ((val >>  1) & 0x5555555555555555U);
+    val = (val & 0x3333333333333333U) + ((val >>  2) & 0x3333333333333333U);
+    val = (val & 0x0f0f0f0f0f0f0f0fU) + ((val >>  4) & 0x0f0f0f0f0f0f0f0fU);
+    val = (val & 0x00ff00ff00ff00ffU) + ((val >>  8) & 0x00ff00ff00ff00ffU);
+    val = (val & 0x0000ffff0000ffffU) + ((val >> 16) & 0x0000ffff0000ffffU);
+    val = (val & 0x00000000ffffffffU) + ((val >> 32) & 0x00000000ffffffffU);
+    return val;
+}
+
+static target_ulong do_bmatflip(target_ulong rs1,
+                                int bits)
+{
+    target_ulong x = rs1;
+    for (int i = 0; i < 3; i++)
+        x = do_shfl(x, 31, bits);
+    return x;
+}
+
+static target_ulong do_bmatxor(target_ulong rs1,
+                               target_ulong rs2,
+                               int bits)
+{
+    int i;
+    uint8_t u[8];
+    uint8_t v[8];
+    uint64_t x = 0;
+
+    target_ulong rs2t = do_bmatflip(rs2, bits);
+
+    for (i = 0; i < 8; i++) {
+        u[i] = rs1 >> (i * 8);
+        v[i] = rs2t >> (i * 8);
+    }
+
+    for (int i = 0; i < 64; i++) {
+        if (popcount(u[i / 8] & v[i % 8]) & 1)
+            x |= 1LL << i;
+    }
+
+    return x;
+}
+
+static target_ulong do_bmator(target_ulong rs1,
+                              target_ulong rs2,
+                              int bits)
+{
+    int i;
+    uint8_t u[8];
+    uint8_t v[8];
+    uint64_t x = 0;
+
+    target_ulong rs2t = do_bmatflip(rs2, bits);
+
+    for (i = 0; i < 8; i++) {
+        u[i] = rs1 >> (i * 8);
+        v[i] = rs2t >> (i * 8);
+    }
+
+    for (int i = 0; i < 64; i++) {
+        if ((u[i / 8] & v[i % 8]) != 0)
+            x |= 1LL << i;
+    }
+
+    return x;
+}
+
+target_ulong HELPER(bmatflip)(target_ulong rs1)
+{
+    return do_bmatflip(rs1, TARGET_LONG_BITS);
+}
+
+target_ulong HELPER(bmatxor)(target_ulong rs1, target_ulong rs2)
+{
+    return do_bmatxor(rs1, rs2, TARGET_LONG_BITS);
+}
+
+target_ulong HELPER(bmator)(target_ulong rs1, target_ulong rs2)
+{
+    return do_bmator(rs1, rs2, TARGET_LONG_BITS);
+}

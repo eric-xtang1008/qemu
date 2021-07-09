@@ -408,6 +408,43 @@ static bool trans_bdecompressw(DisasContext *ctx, arg_bdecompressw *a)
     return gen_arith(ctx, a, gen_bdecompressw);
 }
 
+#define GEN_TRANS_CRC(NAME)                                     \
+static bool trans_##NAME(DisasContext *ctx, arg_##NAME *a)      \
+{                                                               \
+    REQUIRE_EXT(ctx, RVB);                                      \
+    return gen_unary(ctx, a, gen_helper_##NAME);                \
+}                                                               \
+
+GEN_TRANS_CRC(crc32_b)
+GEN_TRANS_CRC(crc32_h)
+GEN_TRANS_CRC(crc32_w)
+GEN_TRANS_CRC(crc32_d)
+GEN_TRANS_CRC(crc32c_b)
+GEN_TRANS_CRC(crc32c_h)
+GEN_TRANS_CRC(crc32c_w)
+GEN_TRANS_CRC(crc32c_d)
+
+static bool trans_bmatflip(DisasContext *ctx, arg_bmatflip *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_unary(ctx, a, gen_helper_bmatflip);
+}
+
+static bool trans_bmatxor(DisasContext *ctx, arg_bmatxor *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_bmatxor);
+}
+
+static bool trans_bmator(DisasContext *ctx, arg_bmatxor *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_bmator);
+}
+
 static bool trans_clzw(DisasContext *ctx, arg_clzw *a)
 {
     REQUIRE_64BIT(ctx);
