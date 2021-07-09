@@ -135,7 +135,6 @@ target_ulong HELPER(cmov)(target_ulong rs1, target_ulong rs2, target_ulong rs3)
     return do_cmov(rs1, rs2, rs3);
 }
 
-
 static target_ulong do_fsl(target_ulong rs1,
                            target_ulong rs2,
                            target_ulong rs3,
@@ -358,4 +357,43 @@ target_ulong HELPER(xperm_h)(target_ulong rs1, target_ulong rs2)
 target_ulong HELPER(xperm_w)(target_ulong rs1, target_ulong rs2)
 {
     return do_xperm(rs1, rs2, 5, TARGET_LONG_BITS);
+}
+
+static target_ulong do_bfp(target_ulong rs1,
+                           target_ulong rs2,
+                           int bits)
+{
+    target_ulong cfg = rs2 >> (bits/2);
+    if ((cfg >> 30) == 2)
+        cfg = cfg >> 16;
+    int len = (cfg >> 8) & (bits/2 - 1);
+    int off = cfg & (bits - 1);
+    len = len ? len : bits/2;
+    target_ulong mask = ~(~(target_ulong)0 << len) << off;
+    target_ulong data = rs2 << off;
+
+    return (data & mask) | (rs1 & ~mask);
+}
+
+static target_ulong do_bfpw(target_ulong rs1,
+                            target_ulong rs2)
+{
+    target_ulong cfg = rs2 >> 16;
+    int len = (cfg >> 8) & 15;
+    int off = cfg & 31;
+    len = len ? len : 16;
+    target_ulong mask = ~(~(target_ulong)(0) << len) << off;
+    target_ulong data = rs2 << off;
+
+    return (data & mask) | (rs1 & ~mask);
+}
+
+target_ulong HELPER(bfp)(target_ulong rs1, target_ulong rs2)
+{
+    return do_bfp(rs1, rs2, TARGET_LONG_BITS);
+}
+
+target_ulong HELPER(bfpw)(target_ulong rs1, target_ulong rs2)
+{
+    return do_bfpw(rs1, rs2);
 }

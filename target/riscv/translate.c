@@ -857,6 +857,12 @@ static bool gen_quati(DisasContext *ctx, arg_r3i *a,
     return true;
 }
 
+static void gen_bfpw(TCGv ret, TCGv arg1, TCGv arg2)
+{
+    gen_helper_bfpw(ret, arg1, arg2);
+    tcg_gen_ext32s_tl(ret, ret);
+}
+
 static uint32_t opcode_at(DisasContextBase *dcbase, target_ulong pc)
 {
     DisasContext *ctx = container_of(dcbase, DisasContext, base);
