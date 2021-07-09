@@ -771,6 +771,27 @@ static void gen_add_uw(TCGv ret, TCGv arg1, TCGv arg2)
     tcg_gen_add_tl(ret, arg1, arg2);
 }
 
+#define GEN_RV64ONLY_INSN_3(NAME)                                   \
+static void gen_##NAME(TCGv ret, TCGv arg1, TCGv arg2, TCGv arg3)   \
+{                                                                   \
+    gen_helper_##NAME(ret, arg1, arg2, arg3);                       \
+    tcg_gen_ext32s_tl(ret, ret);                                    \
+}                                                                   \
+
+GEN_RV64ONLY_INSN_3(fslw)
+GEN_RV64ONLY_INSN_3(fsrw)
+
+#define GEN_RV64ONLY_INSN_2(NAME)                                   \
+static void gen_##NAME(TCGv ret, TCGv arg1, TCGv arg2)              \
+{                                                                   \
+    gen_helper_##NAME(ret, arg1, arg2);                             \
+    tcg_gen_ext32s_tl(ret, ret);                                    \
+}                                                                   \
+
+GEN_RV64ONLY_INSN_2(shflw)
+GEN_RV64ONLY_INSN_2(unshflw)
+GEN_RV64ONLY_INSN_2(bfpw)
+
 static bool gen_arith(DisasContext *ctx, arg_r *a,
                       void(*func)(TCGv, TCGv, TCGv))
 {
@@ -855,12 +876,6 @@ static bool gen_quati(DisasContext *ctx, arg_r3i *a,
     tcg_temp_free(source2);
     tcg_temp_free(source3);
     return true;
-}
-
-static void gen_bfpw(TCGv ret, TCGv arg1, TCGv arg2)
-{
-    gen_helper_bfpw(ret, arg1, arg2);
-    tcg_gen_ext32s_tl(ret, ret);
 }
 
 static uint32_t opcode_at(DisasContextBase *dcbase, target_ulong pc)

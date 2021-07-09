@@ -334,14 +334,14 @@ static bool trans_shflw(DisasContext *ctx, arg_shflw *a)
 {
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
-    return gen_arith(ctx, a, gen_helper_shflw);
+    return gen_arith(ctx, a, gen_shflw);
 }
 
 static bool trans_unshflw(DisasContext *ctx, arg_unshflw *a)
 {
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
-    return gen_arith(ctx, a, gen_helper_unshflw);
+    return gen_arith(ctx, a, gen_unshflw);
 }
 
 static bool trans_xperm_w(DisasContext *ctx, arg_xperm_w *a)
@@ -362,14 +362,14 @@ static bool trans_fslw(DisasContext *ctx, arg_fslw *a)
 {
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
-    return gen_quat(ctx, a, gen_helper_fsl);
+    return gen_quat(ctx, a, gen_fslw);
 }
 
 static bool trans_fsrw(DisasContext *ctx, arg_fsrw *a)
 {
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
-    return gen_quat(ctx, a, gen_helper_fsrw);
+    return gen_quat(ctx, a, gen_fsrw);
 }
 
 static bool trans_fsriw(DisasContext *ctx, arg_fsri *a)
@@ -381,7 +381,7 @@ static bool trans_fsriw(DisasContext *ctx, arg_fsri *a)
         return false;
     }
 
-    return gen_quati(ctx, a, gen_helper_fsrw);
+    return gen_quati(ctx, a, gen_fsrw);
 }
 
 static bool trans_clzw(DisasContext *ctx, arg_clzw *a)
