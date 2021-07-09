@@ -278,6 +278,17 @@ static bool trans_unshfli(DisasContext *ctx, arg_unshfli *a)
     return gen_shifti(ctx, a, gen_helper_unshfl);
 }
 
+#define GEN_TRANS_XPERM(NAME)                                   \
+static bool trans_##NAME(DisasContext *ctx, arg_##NAME *a)      \
+{                                                               \
+    REQUIRE_EXT(ctx, RVB);                                      \
+    return gen_arith(ctx, a, gen_helper_##NAME);                \
+}
+
+GEN_TRANS_XPERM(xperm_n)
+GEN_TRANS_XPERM(xperm_b)
+GEN_TRANS_XPERM(xperm_h)
+
 static bool trans_cmix(DisasContext *ctx, arg_cmix *a)
 {
     REQUIRE_EXT(ctx, RVB);
@@ -325,6 +336,13 @@ static bool trans_unshflw(DisasContext *ctx, arg_unshflw *a)
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
     return gen_arith(ctx, a, gen_helper_unshflw);
+}
+
+static bool trans_xperm_w(DisasContext *ctx, arg_xperm_w *a)
+{
+    REQUIRE_64BIT(ctx);
+    REQUIRE_EXT(ctx, RVB);
+    return gen_arith(ctx, a, gen_helper_xperm_w);
 }
 
 static bool trans_fslw(DisasContext *ctx, arg_fslw *a)
