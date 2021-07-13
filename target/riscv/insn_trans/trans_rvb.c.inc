@@ -547,14 +547,14 @@ static bool trans_srow(DisasContext *ctx, arg_srow *a)
 {
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
-    return gen_shiftw(ctx, a, gen_sro);
+    return gen_shiftw(ctx, a, gen_srow);
 }
 
 static bool trans_sroiw(DisasContext *ctx, arg_sroiw *a)
 {
     REQUIRE_64BIT(ctx);
     REQUIRE_EXT(ctx, RVB);
-    return gen_shiftiw(ctx, a, gen_sro);
+    return gen_shiftiw(ctx, a, gen_srow);
 }
 
 static bool trans_rorw(DisasContext *ctx, arg_rorw *a)
